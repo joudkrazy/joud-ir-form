@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incident Report - Crave Restaurants</title>
+    <style>
+        :root {
+            --primary: #000000;
+            --border: #cccccc;
+            --bg-light: #fafafa;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            color: #000000;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 40px 50px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+        .no-print {
+            background: #e2e8f0;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            border: 1px solid #cbd5e1;
+            font-size: 13px;
+        }
+        #workspaceArea {
+            display: block; 
+        }
+        
+        /* Master Print Wrapper for repeating headers */
+        .print-wrapper-table {
+            width: 100%;
+            border: none;
+            border-collapse: collapse;
+        }
+        .print-wrapper-table > thead > tr > td,
+        .print-wrapper-table > tbody > tr > td {
+            border: none;
+            padding: 0;
+            vertical-align: top;
+        }
+
+        .header-table {
+            width: 100%;
+            margin-bottom: 20px;
+            border: none;
+        }
+        .header-table td {
+            border: none;
+            padding: 0;
+            vertical-align: middle;
+        }
+        .logo-img {
+            max-height: 55px;
+            max-width: 140px;
+            object-fit: contain;
+        }
+        
+        .doc-title {
+            text-align: center;
+            font-size: 18pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            letter-spacing: 1px;
+        }
+
+        .section-title {
+            font-size: 11pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 25px 0 10px 0;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 4px;
+        }
+        .sub-title {
+            font-size: 11pt;
+            font-weight: bold;
+            margin: 15px 0 5px 0;
+        }
+
+        table.data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        table.data-table td {
+            border: 1px solid var(--border);
+            padding: 6px 8px;
+            font-size: 11pt;
+        }
+        table.data-table td.label-cell {
+            background-color: var(--bg-light);
+            font-weight: bold;
+            width: 20%;
+        }
+
+        /* Interactive Auto-Expanding Editors */
+        .editable-inline {
+            border: 1px dashed transparent;
+            padding: 2px 4px;
+            margin: -2px -4px;
+            border-radius: 3px;
+            display: inline-block;
+            min-width: 50px;
+            transition: all 0.2s;
+            font-size: 11pt;
+        }
+        .editable-inline:hover {
+            border-color: #cbd5e1;
+            background-color: #f8fafc;
+        }
+        .editable-inline:focus {
+            outline: 1px solid var(--primary);
+            background-color: #fff;
+        }
+
+        .editable-body {
+            border: 1px dashed transparent;
+            padding: 10px;
+            min-height: 60px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 11pt;
+            line-height: 1.5;
+            background-color: #f8fafc;
+            margin-bottom: 10px;
+        }
+        .editable-body:hover {
+            border-color: #cbd5e1;
+        }
+        .editable-body:focus {
+            outline: 1px solid var(--primary);
+            background-color: #fff;
+        }
+
+        /* Protect elements from Breaking Across Pages */
+        .avoid-break {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        /* Button Styling */
+        button {
+            background-color: #fff;
+            border: 1px solid #777;
+            padding: 4px 10px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #eee;
+        }
+        .btn-new {
+            background-color: #f8fafc;
+            border: 2px solid #000;
+            color: #000;
+            margin-left: 10px;
+        }
+        .btn-new:hover {
+            background-color: #000;
+            color: #fff;
+        }
+        .btn-delete {
+            background-color: #fff1f2;
+            color: #e11d48;
+            border: 1px solid #fda4af;
+            padding: 2px 6px;
+            font-size: 11px;
+            cursor: pointer;
+            border-radius: 3px;
+            font-weight: bold;
+            float: right;
+            margin-top: -3px;
+        }
+        .btn-delete:hover {
+            background-color: #ffe4e6;
+            border-color: #f43f5e;
+        }
+
+        /* Inputs */
+        input.standard-input {
+            border: 1px solid #ddd;
+            padding: 4px 6px;
+            font-size: 11pt;
+            box-sizing: border-box;
+            background-color: #fff;
+            font-family: Arial, sans-serif;
+            width: 100%;
+        }
+        input[type="date"], input[type="time"] {
+            width: 100%;
+        }
+
+        /* Signatures */
+        .signature-section {
+            margin-top: 15px;
+            display: grid;
+            gap: 30px 20px;
+        }
+        .sig-block {
+            font-size: 10pt;
+            line-height: 1.5;
+            position: relative;
+        }
+        .sig-line {
+            width: 90%;
+            border-top: 1px solid #000;
+            margin-bottom: 5px;
+        }
+        .sig-space {
+            height: 50px;
+        }
+        
+        @media print {
+            .no-print, button, .btn-delete { display: none !important; }
+            body { background: white; padding: 0; }
+            .container { border: none; box-shadow: none; padding: 0; max-width: 100%; }
+            .editable-inline, .editable-body { border: none !important; padding: 0; margin: 0; background: transparent !important; }
+            input.standard-input { border: none !important; padding: 0; background: transparent !important; }
+            input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Utility Control Panel -->
+    <div class="no-print">
+        <div style="display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px;">
+            <div>
+                <strong>1. Load Database (CSV):</strong> 
+                <input type="file" id="csvFileInput" accept=".csv" style="width: auto; margin-left: 5px; display: inline-block;">
+                <span id="dbStatus" style="margin-left:10px; font-weight:bold; color:green;"></span>
+            </div>
+            <button onclick="window.print()" style="background: #000; color: #fff; border:none; padding:6px 15px; font-weight: bold;">Print / Save PDF</button>
+        </div>
+        <div style="display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
+            <div>
+                <strong>2. Add Employee Involved:</strong>
+                <input type="text" id="empNoLookupInput" class="standard-input" placeholder="Search ID or Name" style="width: 180px; padding: 5px; font-weight: bold; border: 2px solid #000; display:inline-block;" oninput="lookupEmployeeNo()">
+                <button type="button" class="btn-new" onclick="addBlankEmployee()">+ Add Blank Employee</button>
+            </div>
+            <div>
+                <button type="button" class="btn-new" onclick="addReviewer()">+ Add Ops Manager</button>
+                <button type="button" class="btn-new" onclick="resetReport()" style="color:#e11d48; border-color:#e11d48;">Clear Report</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Letter Workspace -->
+    <div id="workspaceArea">
+        <table class="print-wrapper-table">
+            <thead>
+                <tr>
+                    <td>
+                        <!-- Branding Header -->
+                        <table class="header-table">
+                            <tr>
+                                <td style="width: 25%; text-align: left; vertical-align: middle;">
+                                    <img src="crave-logo.png" alt="كرايف" class="logo-img" onerror="this.style.display='none'; document.getElementById('altLeftLogo').style.display='block';">
+                                    <div id="altLeftLogo" style="display: none; color: #e11d48; font-family: 'Arial Black', sans-serif; font-size: 26px; font-weight: 900; transform: skewX(-6deg); line-height: 1;">كرايف</div>
+                                </td>
+                                <td style="text-align: center; width: 50%; vertical-align: middle;">
+                                </td>
+                                <td style="width: 25%; text-align: right; vertical-align: middle;">
+                                    <div style="display: inline-block; text-align: center;">
+                                        <img src="joud-logo.png" alt="جُود" class="logo-img" onerror="this.style.display='none'; document.getElementById('altRightLogo').style.display='block';">
+                                        <div id="altRightLogo" style="display: none; line-height: 1.1;">
+                                            <div style="font-family: 'Times New Roman', serif; font-size: 26px; font-weight: bold; color: #000;">جُود</div>
+                                            <div style="font-size: 8px; font-weight: bold; letter-spacing: 0.5px; font-family: Arial, sans-serif; text-transform: uppercase; color: #333;">JOUD COFFEE</div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <div class="doc-title">Incident Report</div>
+
+                        <!-- General Information -->
+                        <table class="data-table">
+                            <tr>
+                                <td class="label-cell">Date</td>
+                                <td><input type="date" id="incidentDate" class="standard-input"></td>
+                                <td class="label-cell">Location</td>
+                                <td><input type="text" id="incidentLocation" class="standard-input" placeholder="e.g. Khalifa City"></td>
+                            </tr>
+                            <tr>
+                                <td class="label-cell">Time</td>
+                                <td><input type="time" id="incidentTime" class="standard-input"></td>
+                                <td class="label-cell">Reported By</td>
+                                <td><input type="text" id="reportedBy" class="standard-input" placeholder="Name / Title"></td>
+                            </tr>
+                        </table>
+
+                        <!-- Employees Involved Section -->
+                        <div class="section-title">Employees Involved</div>
+                        <div id="employeesContainer">
+                            <!-- Employee Blocks injected here dynamically -->
+                        </div>
+
+                        <!-- Incident Details Section -->
+                        <div class="section-title">Incident Details</div>
+                        
+                        <div class="avoid-break">
+                            <div class="sub-title">Details of Incident:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="Describe the incident in detail..."></div>
+                        </div>
+
+                        <div class="avoid-break">
+                            <div class="sub-title">Actions Taken:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="Immediate actions taken after the incident..."></div>
+                        </div>
+
+                        <div class="avoid-break">
+                            <div class="sub-title">Findings:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="What was discovered upon review/investigation..."></div>
+                        </div>
+
+                        <div class="avoid-break">
+                            <div class="sub-title">Business Impact:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="Financial, operational, or safety impact..."></div>
+                        </div>
+
+                        <!-- Recommendations & Operations Signatures -->
+                        <div class="avoid-break">
+                            <div class="sub-title">Recommendations:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="Suggested corrective actions or process improvements..."></div>
+                            
+                            <div class="signature-section" id="opsSignatureGrid" style="grid-template-columns: repeat(3, 1fr);">
+                                <!-- Witness -->
+                                <div class="sig-block">
+                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Witnessed and reviewed by:</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-line"></div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Employee Name</div><br>
+                                    <div contenteditable="true" class="editable-inline">Person-In-Charge</div>
+                                </div>
+
+                                <!-- Reported By -->
+                                <div class="sig-block">
+                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reported and reviewed by:</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-line"></div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Manager Name</div><br>
+                                    <div contenteditable="true" class="editable-inline">Manager Position</div>
+                                </div>
+
+                                <!-- Reviewed By -->
+                                <div class="sig-block">
+                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reviewed by:</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-line"></div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Manager Name</div><br>
+                                    <div contenteditable="true" class="editable-inline">Manager Position</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HR Comments, Signatures & Employee Acknowledgment (All grouped in one avoid-break) -->
+                        <div class="avoid-break">
+                            <div class="section-title">HR Review</div>
+                            
+                            <div class="sub-title">HR Comments:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="Any additional HR remarks..."></div>
+
+                            <div class="signature-section" id="hrSignatureGrid" style="grid-template-columns: repeat(2, 1fr);">
+                                <!-- HR Verified -->
+                                <div class="sig-block">
+                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Verified & Reviewed by:</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-line"></div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Ginel Estrella</div><br>
+                                    <div contenteditable="true" class="editable-inline">Employee Relations Specialist</div>
+                                </div>
+
+                                <!-- HR Approved -->
+                                <div class="sig-block">
+                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reviewed & Approved by:</div>
+                                    <div class="sig-space"></div>
+                                    <div class="sig-line"></div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Yasar Alim</div><br>
+                                    <div contenteditable="true" class="editable-inline">HR Manager</div>
+                                </div>
+                            </div>
+
+                            <!-- Employee Acknowledgment Grid (Dynamically Populated based on Employees Involved) -->
+                            <div class="signature-section" id="empSignatureGrid" style="grid-template-columns: repeat(2, 1fr); margin-top: 40px;">
+                                <!-- Dynamic signatures will populate here -->
+                            </div>
+                        </div>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    let globalEmployeeDatabase = [];
+
+    // Date init
+    window.onload = function() {
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('incidentDate').value = today;
+        addBlankEmployee(); // Auto-add one blank employee/signature set to start
+    };
+
+    function resetReport() {
+        if(confirm("Are you sure you want to clear the entire report?")) {
+            document.getElementById('empNoLookupInput').value = "";
+            document.getElementById('incidentLocation').value = "";
+            document.getElementById('incidentTime').value = "";
+            document.getElementById('reportedBy').value = "";
+            
+            document.getElementById('employeesContainer').innerHTML = "";
+            document.getElementById('empSignatureGrid').innerHTML = "";
+            
+            const editors = document.querySelectorAll('.editable-body');
+            editors.forEach(ed => ed.innerHTML = "");
+
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('incidentDate').value = today;
+
+            addBlankEmployee(); // Reset to 1 blank template
+        }
+    }
+
+    // Dynamic Employee & Signature Block Creation
+    function addEmployeeBlock(empData = null) {
+        const container = document.getElementById('employeesContainer');
+        const sigGrid = document.getElementById('empSignatureGrid');
+        
+        // Generate a unique ID linking the employee block to their signature block
+        const uniqueId = 'emp_' + Math.random().toString(36).substr(2, 9);
+        
+        const block = document.createElement('div');
+        block.id = uniqueId;
+        block.className = "avoid-break";
+        block.style.position = "relative";
+        block.style.marginBottom = "15px";
+
+        let name = "", code = "", desig = "", dept = "", loc = "", yos = "";
+
+        if (empData) {
+            name = getDatabaseField(empData, ['Name', 'Employee Name', 'EmpName']) || "";
+            code = getDatabaseField(empData, ['EmpNo', 'Id', 'Code', 'Employee Number']) || "";
+            desig = getDatabaseField(empData, ['Desig', 'Designation', 'Role']) || "";
+            dept = getDatabaseField(empData, ['Dept', 'Department']) || "";
+            loc = getDatabaseField(empData, ['Location', 'Branch', 'Outlet', 'Work Location']) || "";
+            
+            let dojRaw = getDatabaseField(empData, ['DOJ', 'Date of Joining', 'Joining Date', 'EntryDate']);
+            if (dojRaw) {
+                let dojParsed = masterDateParser(dojRaw.toString());
+                if (dojParsed) {
+                    let d1 = new Date(dojParsed);
+                    let d2 = new Date(); // Current date for incident
+                    let diffTime = Math.abs(d2 - d1);
+                    let diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
+                    yos = (Math.round(diffYears * 10) / 10).toString() + " Years";
+                }
+            }
+        }
+
+        // 1. Add Employee Details Table
+        block.innerHTML = `
+            <span class="btn-delete" onclick="removeEmployeeAndSignature('${uniqueId}')" style="position:absolute; top:-8px; right:0; z-index:10;">✕ Remove</span>
+            <table class="data-table" style="margin-bottom:0;">
+                <tr>
+                    <td class="label-cell">Name</td>
+                    <td><input type="text" class="standard-input" value="${name}" style="font-weight:bold;"></td>
+                    <td class="label-cell">Emp. Code</td>
+                    <td><input type="text" class="standard-input" value="${code}" style="font-weight:bold;"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Designation</td>
+                    <td><input type="text" class="standard-input" value="${desig}"></td>
+                    <td class="label-cell">Work Location</td>
+                    <td><input type="text" class="standard-input" value="${loc}"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Department</td>
+                    <td><input type="text" class="standard-input" value="${dept}"></td>
+                    <td class="label-cell">Years of Service</td>
+                    <td><input type="text" class="standard-input" value="${yos}"></td>
+                </tr>
+            </table>
+        `;
+        container.appendChild(block);
+
+        // 2. Add Corresponding Acknowledgment Signature
+        const sigBlock = document.createElement('div');
+        sigBlock.id = 'sig_' + uniqueId;
+        sigBlock.className = "sig-block";
+        
+        let displayDesigLoc = "Designation, Outlet";
+        if(desig || loc) {
+            displayDesigLoc = [desig, loc].filter(Boolean).join(", ");
+        }
+
+        sigBlock.innerHTML = `
+            <span class="btn-delete" onclick="removeEmployeeAndSignature('${uniqueId}')">✕</span>
+            <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Acknowledged by:</div>
+            <div class="sig-space"></div>
+            <div class="sig-line"></div>
+            <div contenteditable="true" class="editable-inline" style="font-weight:bold;">${name || 'Employee Name'}</div><br>
+            <div contenteditable="true" class="editable-inline">${displayDesigLoc}</div>
+        `;
+        sigGrid.appendChild(sigBlock);
+    }
+
+    function addBlankEmployee() {
+        addEmployeeBlock(null);
+    }
+
+    // Ensures deleting an employee removes their signature too
+    function removeEmployeeAndSignature(uniqueId) {
+        const empBlock = document.getElementById(uniqueId);
+        const sigBlock = document.getElementById('sig_' + uniqueId);
+        if(empBlock) empBlock.remove();
+        if(sigBlock) sigBlock.remove();
+    }
+
+    // Dynamic Reviewer Signature Block (Appends to Operations Signatures)
+    function addReviewer() {
+        const grid = document.getElementById('opsSignatureGrid');
+        const block = document.createElement('div');
+        block.className = "sig-block";
+        block.innerHTML = `
+            <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
+            <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Action by:</div>
+            <div class="sig-space"></div>
+            <div class="sig-line"></div>
+            <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Manager Name</div><br>
+            <div contenteditable="true" class="editable-inline">Position</div>
+        `;
+        grid.appendChild(block);
+    }
+
+    // CSV Parsing & Lookup
+    function normalizeKey(str) {
+        if (!str) return '';
+        return str.toString().toLowerCase().replace(/[\uFEFF\u200B\u200C\u200D]/g, '').replace(/["']/g, '').replace(/[^a-z0-9]/g, '').trim();
+    }
+
+    function getDatabaseField(rowObj, variationsArray) {
+        for (let key in rowObj) {
+            let cleanKey = normalizeKey(key);
+            for (let v of variationsArray) {
+                if (cleanKey === normalizeKey(v)) {
+                    return rowObj[key];
+                }
+            }
+        }
+        return null;
+    }
+
+    function masterDateParser(dateStr) {
+        if (!dateStr) return "";
+        let d = dateStr.trim().replace(/^["']|["']$/g, '');
+        let tokens = d.split(/[\s./-]+/);
+        
+        const monthsDict = {jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12, january:1, february:2, march:3, april:4, june:6, july:7, august:8, september:9, october:10, november:11, december:12};
+
+        if (tokens.length === 3) {
+            let day = parseInt(tokens[0], 10);
+            let month = parseInt(tokens[1], 10);
+            let year = parseInt(tokens[2], 10);
+
+            if (isNaN(month) && monthsDict[tokens[1].toLowerCase()]) month = monthsDict[tokens[1].toLowerCase()];
+            if (tokens[0].length === 4) { 
+                year = parseInt(tokens[0], 10);
+                month = isNaN(parseInt(tokens[1], 10)) ? monthsDict[tokens[1].toLowerCase()] : parseInt(tokens[1], 10);
+                day = parseInt(tokens[2], 10);
+            }
+            if (year < 100) year = (year < 70 ? 2000 : 1900) + year;
+            if (!isNaN(day) && !isNaN(month) && !isNaN(year)) return `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
+        }
+        return "";
+    }
+
+    function lookupEmployeeNo() {
+        const rawSearch = document.getElementById('empNoLookupInput').value.trim();
+        const searchStrLower = rawSearch.toLowerCase();
+        const typedNo = normalizeKey(rawSearch);
+        
+        if (!rawSearch || globalEmployeeDatabase.length === 0) {
+            document.getElementById('dbStatus').innerText = "";
+            return;
+        }
+
+        let matchedProfile = null;
+
+        matchedProfile = globalEmployeeDatabase.find(emp => {
+            let idVal = getDatabaseField(emp, ['EmpNo', 'Emp Number', 'EmployeeNo', 'Id', 'Code', 'Employee Number']);
+            if (!idVal) return false;
+            let normId = normalizeKey(idVal);
+            return normId === typedNo || normId === 'cr' + typedNo;
+        });
+
+        if (!matchedProfile && searchStrLower !== 'cr' && searchStrLower.length > 1) {
+            let cleanNameSearch = searchStrLower.replace(/^cr[\s\-]*/i, '').trim();
+            if (cleanNameSearch.length > 0) {
+                matchedProfile = globalEmployeeDatabase.find(emp => {
+                    let nameVal = getDatabaseField(emp, ['Name', 'Employee Name', 'EmpName']);
+                    return nameVal && nameVal.toString().toLowerCase().includes(cleanNameSearch);
+                });
+            }
+        }
+
+        if (matchedProfile) {
+            const empName = getDatabaseField(matchedProfile, ['Name', 'Employee Name', 'EmpName']) || "Unknown";
+            
+            // Auto-remove the default blank employee if it's currently unused to keep things clean
+            const container = document.getElementById('employeesContainer');
+            if (container.children.length === 1) {
+                const firstBlockInputs = container.querySelectorAll('.standard-input');
+                let hasData = Array.from(firstBlockInputs).some(input => input.value.trim() !== "");
+                if (!hasData) {
+                    removeEmployeeAndSignature(container.firstElementChild.id);
+                }
+            }
+
+            addEmployeeBlock(matchedProfile);
+            document.getElementById('empNoLookupInput').value = "";
+            
+            document.getElementById('dbStatus').innerText = `✓ Added ${empName} to list.`;
+            document.getElementById('dbStatus').style.color = 'green';
+            setTimeout(() => { document.getElementById('dbStatus').innerText = ""; }, 3000);
+        } else {
+            document.getElementById('dbStatus').innerText = "⚠ No match found";
+            document.getElementById('dbStatus').style.color = '#e11d48';
+        }
+    }
+
+    function parseCSVLine(textLine) {
+        let columns = []; let insideQuotes = false; let entryBuffer = "";
+        for (let i = 0; i < textLine.length; i++) {
+            let char = textLine[i];
+            if (char === '"') insideQuotes = !insideQuotes; 
+            else if (char === ',' && !insideQuotes) { columns.push(entryBuffer.trim()); entryBuffer = ""; } 
+            else { entryBuffer += char; }
+        }
+        columns.push(entryBuffer.trim());
+        return columns;
+    }
+
+    document.getElementById('csvFileInput').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const lines = event.target.result.split(/\r?\n/);
+            globalEmployeeDatabase = [];
+            if(lines.length > 0) {
+                const headers = parseCSVLine(lines[0]);
+                for (let i = 1; i < lines.length; i++) {
+                    if (!lines[i].trim()) continue;
+                    let cols = parseCSVLine(lines[i]);
+                    let empObj = {};
+                    headers.forEach((header, index) => { empObj[header] = cols[index]; });
+                    globalEmployeeDatabase.push(empObj);
+                }
+                document.getElementById('dbStatus').innerText = `✓ Database Loaded. Ready to search.`;
+                document.getElementById('dbStatus').style.color = 'green';
+            }
+        };
+        reader.readAsText(file);
+    });
+
+</script>
+</body>
+</html>
