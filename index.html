@@ -34,6 +34,11 @@
             border: 1px solid #cbd5e1;
             font-size: 13px;
         }
+        .instructions-panel {
+            background-color: #e0f2fe;
+            border: 1px solid #bae6fd;
+            color: #0369a1;
+        }
         #workspaceArea {
             display: block; 
         }
@@ -237,6 +242,17 @@
 <body>
 
 <div class="container">
+    <!-- Instructions Panel -->
+    <div class="no-print instructions-panel">
+        <strong style="font-size: 14px;">💡 How to use the Incident Report Tool:</strong>
+        <ul style="margin: 6px 0 0 0; padding-left: 20px; line-height: 1.5;">
+            <li><strong>Add Employees:</strong> Depending on the number of employees involved, you can add them by clicking the "+ Add Employee" button.</li>
+            <li><strong>Add Manager:</strong> Depending on the number of witnesses (if any) or reviewers, you can add them by clicking the "+ Add Manager" button.</li>
+            <li><strong>Interactive Typing:</strong> Click directly into the report sections (like Details of Incident or manager names) to type. The boxes will expand automatically as you type.</li>
+            <li><strong>Lastly:</strong> If you are done with the report - Print/Save PDF and save the file.</li>
+        </ul>
+    </div>
+
     <!-- Utility Control Panel -->
     <div class="no-print">
         <div style="display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px;">
@@ -251,10 +267,10 @@
             <div>
                 <strong>2. Add Employee Involved:</strong>
                 <input type="text" id="empNoLookupInput" class="standard-input" placeholder="Search ID or Name" style="width: 180px; padding: 5px; font-weight: bold; border: 2px solid #000; display:inline-block;" oninput="lookupEmployeeNo()">
-                <button type="button" class="btn-new" onclick="addBlankEmployee()">+ Add Blank Employee</button>
+                <button type="button" class="btn-new" onclick="addBlankEmployee()">+ Add Employee</button>
             </div>
             <div>
-                <button type="button" class="btn-new" onclick="addReviewer()">+ Add Ops Manager</button>
+                <button type="button" class="btn-new" onclick="addReviewer()">+ Add Manager</button>
                 <button type="button" class="btn-new" onclick="resetReport()" style="color:#e11d48; border-color:#e11d48;">Clear Report</button>
             </div>
         </div>
