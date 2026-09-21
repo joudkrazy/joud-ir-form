@@ -39,11 +39,26 @@
             border: 1px solid #bae6fd;
             color: #0369a1;
         }
-        #workspaceArea {
-            display: block; 
+        .role-panel {
+            background-color: #fef9c3;
+            border: 1px solid #fde047;
+            color: #713f12;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
         }
-        
-        /* Master Print Wrapper for repeating headers */
+        .role-panel select {
+            padding: 6px 10px;
+            font-weight: bold;
+            font-size: 13px;
+            border: 2px solid #000;
+            border-radius: 3px;
+        }
+        #workspaceArea {
+            display: block;
+        }
+
         .print-wrapper-table {
             width: 100%;
             border: none;
@@ -71,7 +86,7 @@
             max-width: 140px;
             object-fit: contain;
         }
-        
+
         .doc-title {
             text-align: center;
             font-size: 18pt;
@@ -80,6 +95,18 @@
             margin-bottom: 25px;
             letter-spacing: 1px;
         }
+
+        .part-title {
+            font-size: 13pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            margin: 35px 0 14px 0;
+            padding: 8px 12px;
+            background-color: #000;
+            color: #fff;
+            letter-spacing: 0.5px;
+        }
+        .part-title:first-of-type { margin-top: 0; }
 
         .section-title {
             font-size: 11pt;
@@ -93,6 +120,12 @@
             font-size: 11pt;
             font-weight: bold;
             margin: 15px 0 5px 0;
+        }
+        .part-note {
+            font-size: 9.5pt;
+            font-style: italic;
+            color: #555;
+            margin: -6px 0 12px 0;
         }
 
         table.data-table {
@@ -111,7 +144,6 @@
             width: 20%;
         }
 
-        /* Interactive Auto-Expanding Editors */
         .editable-inline {
             border: 1px dashed transparent;
             padding: 2px 4px;
@@ -150,13 +182,11 @@
             background-color: #fff;
         }
 
-        /* Protect elements from Breaking Across Pages */
         .avoid-break {
             page-break-inside: avoid;
             break-inside: avoid;
         }
 
-        /* Button Styling */
         button {
             background-color: #fff;
             border: 1px solid #777;
@@ -195,7 +225,6 @@
             border-color: #f43f5e;
         }
 
-        /* Inputs */
         input.standard-input {
             border: 1px solid #ddd;
             padding: 4px 6px;
@@ -209,7 +238,23 @@
             width: 100%;
         }
 
-        /* Signatures */
+        .checkbox-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px 20px;
+            padding: 10px 4px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11pt;
+        }
+        .checkbox-item input[type="checkbox"] {
+            width: 15px;
+            height: 15px;
+        }
+
         .signature-section {
             margin-top: 15px;
             display: grid;
@@ -228,7 +273,7 @@
         .sig-space {
             height: 50px;
         }
-        
+
         @media print {
             .no-print, button, .btn-delete { display: none !important; }
             body { background: white; padding: 0; }
@@ -236,61 +281,70 @@
             .editable-inline, .editable-body { border: none !important; padding: 0; margin: 0; background: transparent !important; }
             input.standard-input { border: none !important; padding: 0; background: transparent !important; }
             input[type="date"]::-webkit-calendar-picker-indicator, input[type="time"]::-webkit-calendar-picker-indicator { display: none; }
+            .part-title { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Instructions Panel -->
     <div class="no-print instructions-panel">
         <strong style="font-size: 14px;">💡 How to use the Incident Report Tool:</strong>
         <ul style="margin: 6px 0 0 0; padding-left: 20px; line-height: 1.5;">
-            <li><strong>Add Employees:</strong> Depending on the number of employees involved, you can add them by clicking the "+ Add Employee" button.</li>
-            <li><strong>Add Manager:</strong> Depending on the number of witnesses (if any) or reviewers, you can add them by clicking the "+ Add Manager" button.</li>
-            <li><strong>Interactive Typing:</strong> Click directly into the report sections (like Details of Incident or manager names) to type. The boxes will expand automatically as you type.</li>
-            <li><strong>Lastly:</strong> If you are done with the report - Print/Save PDF and save the file.</li>
+            <li><strong>Part 1 (Reporter):</strong> The person reporting the incident (Manager, Guest Relations, etc.) completes the incident facts, type of incident, employees involved, and recommendations.</li>
+            <li><strong>Part 2 (Employee):</strong> The employee gives their own account of the incident in their own words, then signs (or the refusal is witnessed and noted).</li>
+            <li><strong>Part 3 (Witness):</strong> Any witness records what they saw, independently of the initial report and employee's accounts. Use "+ Add Witness" if there is more than one.</li>
+            <li><strong>Part 4 (HR):</strong> HR reviews all three accounts and closes the case.</li>
+            <li><strong>View As:</strong> Use the dropdown below to show only the section relevant to whoever is filling it in — the other parts stay hidden (and out of that person's printout) so each account stays independent. Switch back to "Full Report (HR)" to see and print everything together.</li>
         </ul>
     </div>
 
-    <!-- Utility Control Panel -->
+    <div class="no-print role-panel">
+        <strong>👁 View As:</strong>
+        <select id="roleViewSelect" onchange="applyRoleView()">
+            <option value="hr">Full Report (HR)</option>
+            <option value="manager">Reporter View (Part 1 only)</option>
+            <option value="employee">Employee View (Part 2 only)</option>
+            <option value="witness">Witness View (Part 3 only)</option>
+        </select>
+        <span style="font-size:12px;">Only the selected person's section is shown/printed — the rest stays hidden so each account is independent.</span>
+    </div>
+
     <div class="no-print">
         <div style="display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap; margin-bottom: 10px;">
-            <div>
-                <strong>1. Load Database (CSV):</strong> 
+            <div id="csvLoaderControls">
+                <strong>1. Load Database (CSV):</strong>
                 <input type="file" id="csvFileInput" accept=".csv" style="width: auto; margin-left: 5px; display: inline-block;">
                 <span id="dbStatus" style="margin-left:10px; font-weight:bold; color:green;"></span>
             </div>
             <button onclick="window.print()" style="background: #000; color: #fff; border:none; padding:6px 15px; font-weight: bold;">Print / Save PDF</button>
         </div>
         <div style="display: flex; gap: 15px; align-items: center; justify-content: space-between; flex-wrap: wrap;">
-            <div>
+            <div id="addEmployeeControls">
                 <strong>2. Add Employee Involved:</strong>
                 <input type="text" id="empNoLookupInput" class="standard-input" placeholder="Search ID or Name" style="width: 180px; padding: 5px; font-weight: bold; border: 2px solid #000; display:inline-block;" oninput="lookupEmployeeNo()">
                 <button type="button" class="btn-new" onclick="addBlankEmployee()">+ Add Employee</button>
             </div>
             <div>
-                <button type="button" class="btn-new" onclick="addReviewer()">+ Add Manager</button>
+                <button type="button" class="btn-new" id="addReviewerBtn" onclick="addManagerSignature()">+ Add Reviewer</button>
+                <button type="button" class="btn-new" id="addWitnessBtn" onclick="addWitnessBlock()">+ Add Witness</button>
                 <button type="button" class="btn-new" onclick="resetReport()" style="color:#e11d48; border-color:#e11d48;">Clear Report</button>
             </div>
         </div>
     </div>
 
-    <!-- Main Letter Workspace -->
     <div id="workspaceArea">
         <table class="print-wrapper-table">
             <thead>
                 <tr>
                     <td>
-                        <!-- Branding Header -->
                         <table class="header-table">
                             <tr>
                                 <td style="width: 25%; text-align: left; vertical-align: middle;">
                                     <img src="crave-logo.png" alt="كرايف" class="logo-img" onerror="this.style.display='none'; document.getElementById('altLeftLogo').style.display='block';">
                                     <div id="altLeftLogo" style="display: none; color: #e11d48; font-family: 'Arial Black', sans-serif; font-size: 26px; font-weight: 900; transform: skewX(-6deg); line-height: 1;">كرايف</div>
                                 </td>
-                                <td style="text-align: center; width: 50%; vertical-align: middle;">
-                                </td>
+                                <td style="text-align: center; width: 50%; vertical-align: middle;"></td>
                                 <td style="width: 25%; text-align: right; vertical-align: middle;">
                                     <div style="display: inline-block; text-align: center;">
                                         <img src="joud-logo.png" alt="جُود" class="logo-img" onerror="this.style.display='none'; document.getElementById('altRightLogo').style.display='block';">
@@ -310,78 +364,110 @@
                     <td>
                         <div class="doc-title">Incident Report</div>
 
-                        <!-- General Information -->
-                        <table class="data-table">
-                            <tr>
-                                <td class="label-cell">Date</td>
-                                <td><input type="date" id="incidentDate" class="standard-input"></td>
-                                <td class="label-cell">Location</td>
-                                <td><input type="text" id="incidentLocation" class="standard-input" placeholder="e.g. Khalifa City"></td>
-                            </tr>
-                            <tr>
-                                <td class="label-cell">Time</td>
-                                <td><input type="time" id="incidentTime" class="standard-input"></td>
-                                <td class="label-cell">Reported By</td>
-                                <td><input type="text" id="reportedBy" class="standard-input" placeholder="Name / Title"></td>
-                            </tr>
-                        </table>
+                        <!-- ================= PART 1: INCIDENT REPORT (REPORTER) ================= -->
+                        <div class="part-title" data-view="manager hr">Part 1 — Incident Report</div>
+                        <div class="part-title" data-view="employee" style="display:none;">Incident Summary (Reference for Your Statement)</div>
+                        <div class="part-title" data-view="witness" style="display:none;">Incident Reference</div>
 
-                        <!-- Employees Involved Section -->
-                        <div class="section-title">Employees Involved</div>
-                        <div id="employeesContainer">
-                            <!-- Employee Blocks injected here dynamically -->
+                        <div data-view="manager employee witness hr">
+                            <table class="data-table">
+                                <tr>
+                                    <td class="label-cell">Date</td>
+                                    <td><input type="date" id="incidentDate" class="standard-input"></td>
+                                    <td class="label-cell">Location</td>
+                                    <td><input type="text" id="incidentLocation" class="standard-input" placeholder="e.g. Khalifa City"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">Time</td>
+                                    <td><input type="time" id="incidentTime" class="standard-input"></td>
+                                    <td class="label-cell">Reported By</td>
+                                    <td><input type="text" id="reportedBy" class="standard-input" placeholder="Name / Title"></td>
+                                </tr>
+                            </table>
                         </div>
 
-                        <!-- Incident Details Section -->
-                        <div class="section-title">Incident Details</div>
-                        
-                        <div class="avoid-break">
+                        <div data-view="manager employee hr">
+                            <div class="sub-title" style="margin-top:0;">Type of Incident:</div>
+                            <div class="checkbox-row" style="border: 1px solid var(--border); border-radius:4px; background-color: var(--bg-light);">
+                                <label class="checkbox-item"><input type="checkbox"> Misconduct</label>
+                                <label class="checkbox-item"><input type="checkbox"> Safety / Health</label>
+                                <label class="checkbox-item"><input type="checkbox"> Attendance</label>
+                                <label class="checkbox-item"><input type="checkbox"> Grievance</label>
+                                <label class="checkbox-item"><input type="checkbox"> Harassment</label>
+                                <label class="checkbox-item"><input type="checkbox"> Other: <span class="editable-inline" contenteditable="true" style="min-width:100px;"></span></label>
+                            </div>
+                        </div>
+
+                        <div data-view="manager hr">
+                            <div class="section-title">Employees Involved</div>
+                            <div id="employeesContainer">
+                                <!-- Employee Blocks injected here dynamically -->
+                            </div>
+                        </div>
+
+                        <div data-view="manager employee hr">
+                            <div class="section-title">Incident Details</div>
+                        </div>
+
+                        <div class="avoid-break" data-view="manager employee hr">
                             <div class="sub-title">Details of Incident:</div>
-                            <div class="editable-body" contenteditable="true" placeholder="Describe the incident in detail..."></div>
+                            <div class="editable-body" contenteditable="true" placeholder="Describe the incident in detail, from the reporter's perspective..."></div>
                         </div>
 
-                        <div class="avoid-break">
+                        <div class="avoid-break" data-view="manager hr">
                             <div class="sub-title">Actions Taken:</div>
                             <div class="editable-body" contenteditable="true" placeholder="Immediate actions taken after the incident..."></div>
                         </div>
 
-                        <div class="avoid-break">
+                        <div class="avoid-break" data-view="manager hr">
                             <div class="sub-title">Findings:</div>
                             <div class="editable-body" contenteditable="true" placeholder="What was discovered upon review/investigation..."></div>
                         </div>
 
-                        <div class="avoid-break">
+                        <div class="avoid-break" data-view="manager hr">
                             <div class="sub-title">Business Impact:</div>
                             <div class="editable-body" contenteditable="true" placeholder="Financial, operational, or safety impact..."></div>
                         </div>
 
-                        <!-- Recommendations & Operations Signatures -->
-                        <div class="avoid-break">
+                        <div class="avoid-break" data-view="manager hr">
+                            <div class="section-title">Policy / Labour Law Reference</div>
+                            <table class="data-table">
+                                <tr>
+                                    <td class="label-cell">Company Code of Conduct Article No.</td>
+                                    <td><input type="text" class="standard-input" placeholder="e.g. Art. 12.3"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">UAE Labour Law Article No.<br><span style="font-weight:normal; font-size:9pt;">(Federal Decree-Law No. 33 of 2021)</span></td>
+                                    <td><input type="text" class="standard-input" placeholder="e.g. Article 39 / 42 / 44"></td>
+                                </tr>
+                                <tr>
+                                    <td class="label-cell">MOHRE Reference No.<br><span style="font-weight:normal; font-size:9pt;">(if a labor complaint / case is filed)</span></td>
+                                    <td><input type="text" class="standard-input" placeholder="Leave blank if not applicable"></td>
+                                </tr>
+                            </table>
+
+                            <div class="sub-title">Recommended Disciplinary Action:</div>
+                            <div class="checkbox-row" style="border: 1px solid var(--border); border-radius:4px; background-color: var(--bg-light);">
+                                <label class="checkbox-item"><input type="checkbox"> Verbal warning</label>
+                                <label class="checkbox-item"><input type="checkbox"> Written warning</label>
+                                <label class="checkbox-item"><input type="checkbox"> Deduction (max 5 days/month)</label>
+                                <label class="checkbox-item"><input type="checkbox"> Suspension without pay (max 14 days/year)</label>
+                                <label class="checkbox-item"><input type="checkbox"> Termination</label>
+                                <label class="checkbox-item"><input type="checkbox"> Referral to MOHRE</label>
+                            </div>
+
                             <div class="sub-title">Recommendations:</div>
                             <div class="editable-body" contenteditable="true" placeholder="Suggested corrective actions or process improvements..."></div>
-                            
-                            <div class="signature-section" id="opsSignatureGrid" style="grid-template-columns: repeat(3, 1fr);">
-                                <!-- Witness -->
+
+                            <div class="signature-section" id="managerSignatureGrid" style="grid-template-columns: repeat(2, 1fr);">
                                 <div class="sig-block">
                                     <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
-                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Witnessed and reviewed by:</div>
+                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reported by:</div>
                                     <div class="sig-space"></div>
                                     <div class="sig-line"></div>
-                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Employee Name</div><br>
-                                    <div contenteditable="true" class="editable-inline">Person-In-Charge</div>
+                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Reporter Name</div><br>
+                                    <div contenteditable="true" class="editable-inline">Reporter Position</div>
                                 </div>
-
-                                <!-- Reported By -->
-                                <div class="sig-block">
-                                    <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
-                                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reported and reviewed by:</div>
-                                    <div class="sig-space"></div>
-                                    <div class="sig-line"></div>
-                                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Manager Name</div><br>
-                                    <div contenteditable="true" class="editable-inline">Manager Position</div>
-                                </div>
-
-                                <!-- Reviewed By -->
                                 <div class="sig-block">
                                     <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
                                     <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reviewed by:</div>
@@ -393,15 +479,72 @@
                             </div>
                         </div>
 
-                        <!-- HR Comments, Signatures & Employee Acknowledgment (All grouped in one avoid-break) -->
-                        <div class="avoid-break">
-                            <div class="section-title">HR Review</div>
-                            
+                        <!-- ================= PART 2: EMPLOYEE STATEMENT ================= -->
+                        <div data-view="employee hr">
+                            <div class="part-title">Part 2 — Employee Statement</div>
+                            <div class="part-note">To be completed by the employee involved, in their own words, independently of Part 1.</div>
+                        </div>
+
+                        <div class="avoid-break" data-view="employee hr">
+                            <div class="sub-title">Employee's Version of the Incident:</div>
+                            <div class="editable-body" contenteditable="true" placeholder="The employee's own account of what happened..." style="min-height:100px;"></div>
+                        </div>
+
+                        <div class="avoid-break" data-view="employee hr">
+                            <div class="sub-title">Employee Acknowledgment:</div>
+                            <div id="refusalNoteContainer"></div>
+                            <div class="no-print" style="background:none; border:none; padding:0; margin: 0 0 10px 0;">
+                                <button type="button" class="btn-new" onclick="addRefusalNote()" style="font-size:10px; padding:3px 8px;">+ Note refusal to sign (if applicable)</button>
+                            </div>
+                            <div class="signature-section" id="empSignatureGrid" style="grid-template-columns: repeat(2, 1fr); margin-top: 10px;">
+                                <!-- Dynamic per-employee signatures populate here, synced from Part 1 -->
+                            </div>
+                        </div>
+
+                        <!-- ================= PART 3: WITNESS STATEMENT ================= -->
+                        <div data-view="witness hr">
+                            <div class="part-title">Part 3 — Witness Statement</div>
+                            <div class="part-note">To be completed by anyone who witnessed the incident, independently of Parts 1 and 2. If there was no witness, tick "No witness available" below.</div>
+                        </div>
+
+                        <div class="checkbox-item" style="margin-bottom:10px;" data-view="witness hr">
+                            <input type="checkbox" id="noWitnessCheckbox">
+                            <span>No witness available for this incident</span>
+                        </div>
+
+                        <div id="witnessContainer" data-view="witness hr">
+                            <div class="avoid-break witness-block" style="margin-bottom:20px; position:relative;">
+                                <span class="btn-delete" onclick="this.closest('.witness-block').remove()">✕ Remove</span>
+                                <table class="data-table" style="margin-bottom:10px;">
+                                    <tr>
+                                        <td class="label-cell">Witness Name</td>
+                                        <td><input type="text" class="standard-input" placeholder="Full name"></td>
+                                        <td class="label-cell">Position / Outlet</td>
+                                        <td><input type="text" class="standard-input" placeholder="e.g. Barista, Al Qana"></td>
+                                    </tr>
+                                </table>
+                                <div class="sub-title">Witness Statement:</div>
+                                <div class="editable-body" contenteditable="true" placeholder="What the witness saw or heard, in their own words..."></div>
+                                <div class="signature-section" style="grid-template-columns: repeat(1, 1fr); max-width:280px;">
+                                    <div class="sig-block">
+                                        <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Witnessed and signed by:</div>
+                                        <div class="sig-space"></div>
+                                        <div class="sig-line"></div>
+                                        <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Witness Name</div><br>
+                                        <div contenteditable="true" class="editable-inline">Position / Outlet</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ================= PART 4: HR REVIEW ================= -->
+                        <div class="avoid-break" data-view="hr">
+                            <div class="part-title">Part 4 — HR Review</div>
+
                             <div class="sub-title">HR Comments:</div>
-                            <div class="editable-body" contenteditable="true" placeholder="Any additional HR remarks..."></div>
+                            <div class="editable-body" contenteditable="true" placeholder="Any additional HR remarks, weighing Parts 1–3..."></div>
 
                             <div class="signature-section" id="hrSignatureGrid" style="grid-template-columns: repeat(2, 1fr);">
-                                <!-- HR Verified -->
                                 <div class="sig-block">
                                     <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
                                     <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Verified & Reviewed by:</div>
@@ -410,8 +553,6 @@
                                     <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Ginel Estrella</div><br>
                                     <div contenteditable="true" class="editable-inline">Employee Relations Specialist</div>
                                 </div>
-
-                                <!-- HR Approved -->
                                 <div class="sig-block">
                                     <span class="btn-delete" onclick="this.parentElement.remove()">✕</span>
                                     <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Reviewed & Approved by:</div>
@@ -420,11 +561,6 @@
                                     <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Yasar Alim</div><br>
                                     <div contenteditable="true" class="editable-inline">HR Manager</div>
                                 </div>
-                            </div>
-
-                            <!-- Employee Acknowledgment Grid (Dynamically Populated based on Employees Involved) -->
-                            <div class="signature-section" id="empSignatureGrid" style="grid-template-columns: repeat(2, 1fr); margin-top: 40px;">
-                                <!-- Dynamic signatures will populate here -->
                             </div>
                         </div>
 
@@ -438,12 +574,32 @@
 <script>
     let globalEmployeeDatabase = [];
 
-    // Date init
     window.onload = function() {
         const today = new Date().toISOString().split('T')[0];
         document.getElementById('incidentDate').value = today;
-        addBlankEmployee(); // Auto-add one blank employee/signature set to start
+        addBlankEmployee();
+        addWitnessBlockInitCheck();
+        applyRoleView();
     };
+
+    function addWitnessBlockInitCheck() {
+        // witness container already ships with one static block in the markup, so no JS init needed
+    }
+
+    // ---------- Role-based view toggle ----------
+    function applyRoleView() {
+        const role = document.getElementById('roleViewSelect').value;
+        document.querySelectorAll('[data-view]').forEach(el => {
+            const allowed = el.getAttribute('data-view').split(' ');
+            el.style.display = allowed.includes(role) ? '' : 'none';
+        });
+        const showManagerControls = (role === 'manager' || role === 'hr');
+        const showWitnessControls = (role === 'witness' || role === 'hr');
+        document.getElementById('addEmployeeControls').style.display = showManagerControls ? '' : 'none';
+        document.getElementById('csvLoaderControls').style.display = showManagerControls ? '' : 'none';
+        document.getElementById('addReviewerBtn').style.display = showManagerControls ? '' : 'none';
+        document.getElementById('addWitnessBtn').style.display = showWitnessControls ? '' : 'none';
+    }
 
     function resetReport() {
         if(confirm("Are you sure you want to clear the entire report?")) {
@@ -451,28 +607,34 @@
             document.getElementById('incidentLocation').value = "";
             document.getElementById('incidentTime').value = "";
             document.getElementById('reportedBy').value = "";
-            
+
             document.getElementById('employeesContainer').innerHTML = "";
             document.getElementById('empSignatureGrid').innerHTML = "";
-            
+            document.getElementById('witnessContainer').innerHTML = "";
+            document.getElementById('noWitnessCheckbox').checked = false;
+            document.getElementById('refusalNoteContainer').innerHTML = "";
+
             const editors = document.querySelectorAll('.editable-body');
             editors.forEach(ed => ed.innerHTML = "");
+
+            const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+            checkboxes.forEach(cb => cb.checked = false);
 
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('incidentDate').value = today;
 
-            addBlankEmployee(); // Reset to 1 blank template
+            addBlankEmployee();
+            addWitnessBlock();
         }
     }
 
-    // Dynamic Employee & Signature Block Creation
+    // ---------- Employees (Part 1), synced live into Part 2 acknowledgment ----------
     function addEmployeeBlock(empData = null) {
         const container = document.getElementById('employeesContainer');
         const sigGrid = document.getElementById('empSignatureGrid');
-        
-        // Generate a unique ID linking the employee block to their signature block
+
         const uniqueId = 'emp_' + Math.random().toString(36).substr(2, 9);
-        
+
         const block = document.createElement('div');
         block.id = uniqueId;
         block.className = "avoid-break";
@@ -480,6 +642,7 @@
         block.style.marginBottom = "15px";
 
         let name = "", code = "", desig = "", dept = "", loc = "", yos = "";
+        let eid = "", labor = "", nationality = "", dojDisplay = "";
 
         if (empData) {
             name = getDatabaseField(empData, ['Name', 'Employee Name', 'EmpName']) || "";
@@ -487,13 +650,17 @@
             desig = getDatabaseField(empData, ['Desig', 'Designation', 'Role']) || "";
             dept = getDatabaseField(empData, ['Dept', 'Department']) || "";
             loc = getDatabaseField(empData, ['Location', 'Branch', 'Outlet', 'Work Location']) || "";
-            
+            eid = getDatabaseField(empData, ['EmiratesID', 'Emirates ID', 'EID', 'Emirates Id No']) || "";
+            labor = getDatabaseField(empData, ['LaborCard', 'Labor Card', 'Work Permit', 'WorkPermitNo', 'Labour Card No']) || "";
+            nationality = getDatabaseField(empData, ['Nationality', 'Nationality/Country']) || "";
+
             let dojRaw = getDatabaseField(empData, ['DOJ', 'Date of Joining', 'Joining Date', 'EntryDate']);
             if (dojRaw) {
+                dojDisplay = dojRaw.toString();
                 let dojParsed = masterDateParser(dojRaw.toString());
                 if (dojParsed) {
                     let d1 = new Date(dojParsed);
-                    let d2 = new Date(); // Current date for incident
+                    let d2 = new Date();
                     let diffTime = Math.abs(d2 - d1);
                     let diffYears = diffTime / (1000 * 60 * 60 * 24 * 365.25);
                     yos = (Math.round(diffYears * 10) / 10).toString() + " Years";
@@ -501,21 +668,20 @@
             }
         }
 
-        // 1. Add Employee Details Table
         block.innerHTML = `
             <span class="btn-delete" onclick="removeEmployeeAndSignature('${uniqueId}')" style="position:absolute; top:-8px; right:0; z-index:10;">✕ Remove</span>
             <table class="data-table" style="margin-bottom:0;">
                 <tr>
                     <td class="label-cell">Name</td>
-                    <td><input type="text" class="standard-input" value="${name}" style="font-weight:bold;"></td>
+                    <td><input type="text" id="name_${uniqueId}" class="standard-input" value="${name}" style="font-weight:bold;" oninput="syncEmployeeSignature('${uniqueId}')"></td>
                     <td class="label-cell">Emp. Code</td>
                     <td><input type="text" class="standard-input" value="${code}" style="font-weight:bold;"></td>
                 </tr>
                 <tr>
                     <td class="label-cell">Designation</td>
-                    <td><input type="text" class="standard-input" value="${desig}"></td>
+                    <td><input type="text" id="desig_${uniqueId}" class="standard-input" value="${desig}" oninput="syncEmployeeSignature('${uniqueId}')"></td>
                     <td class="label-cell">Work Location</td>
-                    <td><input type="text" class="standard-input" value="${loc}"></td>
+                    <td><input type="text" id="loc_${uniqueId}" class="standard-input" value="${loc}" oninput="syncEmployeeSignature('${uniqueId}')"></td>
                 </tr>
                 <tr>
                     <td class="label-cell">Department</td>
@@ -523,15 +689,26 @@
                     <td class="label-cell">Years of Service</td>
                     <td><input type="text" class="standard-input" value="${yos}"></td>
                 </tr>
+                <tr>
+                    <td class="label-cell">Emirates ID No.</td>
+                    <td><input type="text" class="standard-input" value="${eid}"></td>
+                    <td class="label-cell">Labor Card / Work Permit No.</td>
+                    <td><input type="text" class="standard-input" value="${labor}"></td>
+                </tr>
+                <tr>
+                    <td class="label-cell">Nationality</td>
+                    <td><input type="text" class="standard-input" value="${nationality}"></td>
+                    <td class="label-cell">Date of Joining</td>
+                    <td><input type="text" class="standard-input" value="${dojDisplay}"></td>
+                </tr>
             </table>
         `;
         container.appendChild(block);
 
-        // 2. Add Corresponding Acknowledgment Signature
         const sigBlock = document.createElement('div');
         sigBlock.id = 'sig_' + uniqueId;
         sigBlock.className = "sig-block";
-        
+
         let displayDesigLoc = "Designation, Outlet";
         if(desig || loc) {
             displayDesigLoc = [desig, loc].filter(Boolean).join(", ");
@@ -542,17 +719,30 @@
             <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Acknowledged by:</div>
             <div class="sig-space"></div>
             <div class="sig-line"></div>
-            <div contenteditable="true" class="editable-inline" style="font-weight:bold;">${name || 'Employee Name'}</div><br>
-            <div contenteditable="true" class="editable-inline">${displayDesigLoc}</div>
+            <div id="sigName_${uniqueId}" class="editable-inline" style="font-weight:bold;">${name || 'Employee Name'}</div><br>
+            <div id="sigDesigLoc_${uniqueId}" class="editable-inline">${displayDesigLoc}</div>
         `;
         sigGrid.appendChild(sigBlock);
+    }
+
+    function syncEmployeeSignature(uniqueId) {
+        const nameInput = document.getElementById('name_' + uniqueId);
+        const desigInput = document.getElementById('desig_' + uniqueId);
+        const locInput = document.getElementById('loc_' + uniqueId);
+        const sigName = document.getElementById('sigName_' + uniqueId);
+        const sigDesigLoc = document.getElementById('sigDesigLoc_' + uniqueId);
+        if (!sigName || !sigDesigLoc) return;
+        const nameVal = nameInput ? nameInput.value.trim() : '';
+        const desigVal = desigInput ? desigInput.value.trim() : '';
+        const locVal = locInput ? locInput.value.trim() : '';
+        sigName.innerText = nameVal || 'Employee Name';
+        sigDesigLoc.innerText = [desigVal, locVal].filter(Boolean).join(', ') || 'Designation, Outlet';
     }
 
     function addBlankEmployee() {
         addEmployeeBlock(null);
     }
 
-    // Ensures deleting an employee removes their signature too
     function removeEmployeeAndSignature(uniqueId) {
         const empBlock = document.getElementById(uniqueId);
         const sigBlock = document.getElementById('sig_' + uniqueId);
@@ -560,9 +750,25 @@
         if(sigBlock) sigBlock.remove();
     }
 
-    // Dynamic Reviewer Signature Block (Appends to Operations Signatures)
-    function addReviewer() {
-        const grid = document.getElementById('opsSignatureGrid');
+    // ---------- Optional refusal-to-sign note (Part 2) ----------
+    function addRefusalNote() {
+        const container = document.getElementById('refusalNoteContainer');
+        if (container.querySelector('.refusal-note')) return; // already added, avoid duplicates
+        const div = document.createElement('div');
+        div.className = 'checkbox-item refusal-note';
+        div.style.marginBottom = '10px';
+        div.innerHTML = `
+            <input type="checkbox">
+            <span>Employee refused to sign — refusal witnessed by:</span>
+            <span class="editable-inline" contenteditable="true" style="min-width:160px; border-bottom:1px solid #000;"></span>
+            <span class="btn-delete" onclick="this.closest('.refusal-note').remove()" style="float:none; margin-left:8px;">✕</span>
+        `;
+        container.appendChild(div);
+    }
+
+    // ---------- Extra manager reviewer signatures (Part 1) ----------
+    function addManagerSignature() {
+        const grid = document.getElementById('managerSignatureGrid');
         const block = document.createElement('div');
         block.className = "sig-block";
         block.innerHTML = `
@@ -576,7 +782,39 @@
         grid.appendChild(block);
     }
 
-    // CSV Parsing & Lookup
+    // ---------- Witness statements (Part 3) ----------
+    function addWitnessBlock() {
+        const container = document.getElementById('witnessContainer');
+        const block = document.createElement('div');
+        block.className = "avoid-break witness-block";
+        block.style.marginBottom = "20px";
+        block.style.position = "relative";
+        block.innerHTML = `
+            <span class="btn-delete" onclick="this.closest('.witness-block').remove()">✕ Remove</span>
+            <table class="data-table" style="margin-bottom:10px;">
+                <tr>
+                    <td class="label-cell">Witness Name</td>
+                    <td><input type="text" class="standard-input" placeholder="Full name"></td>
+                    <td class="label-cell">Position / Outlet</td>
+                    <td><input type="text" class="standard-input" placeholder="e.g. Barista, Al Qana"></td>
+                </tr>
+            </table>
+            <div class="sub-title">Witness Statement:</div>
+            <div class="editable-body" contenteditable="true" placeholder="What the witness saw or heard, in their own words..."></div>
+            <div class="signature-section" style="grid-template-columns: repeat(1, 1fr); max-width:280px;">
+                <div class="sig-block">
+                    <div class="editable-inline" contenteditable="true" style="font-weight:bold;">Witnessed and signed by:</div>
+                    <div class="sig-space"></div>
+                    <div class="sig-line"></div>
+                    <div contenteditable="true" class="editable-inline" style="font-weight:bold;">Witness Name</div><br>
+                    <div contenteditable="true" class="editable-inline">Position / Outlet</div>
+                </div>
+            </div>
+        `;
+        container.appendChild(block);
+    }
+
+    // ---------- CSV parsing & lookup ----------
     function normalizeKey(str) {
         if (!str) return '';
         return str.toString().toLowerCase().replace(/[\uFEFF\u200B\u200C\u200D]/g, '').replace(/["']/g, '').replace(/[^a-z0-9]/g, '').trim();
@@ -598,7 +836,7 @@
         if (!dateStr) return "";
         let d = dateStr.trim().replace(/^["']|["']$/g, '');
         let tokens = d.split(/[\s./-]+/);
-        
+
         const monthsDict = {jan:1, feb:2, mar:3, apr:4, may:5, jun:6, jul:7, aug:8, sep:9, oct:10, nov:11, dec:12, january:1, february:2, march:3, april:4, june:6, july:7, august:8, september:9, october:10, november:11, december:12};
 
         if (tokens.length === 3) {
@@ -607,7 +845,7 @@
             let year = parseInt(tokens[2], 10);
 
             if (isNaN(month) && monthsDict[tokens[1].toLowerCase()]) month = monthsDict[tokens[1].toLowerCase()];
-            if (tokens[0].length === 4) { 
+            if (tokens[0].length === 4) {
                 year = parseInt(tokens[0], 10);
                 month = isNaN(parseInt(tokens[1], 10)) ? monthsDict[tokens[1].toLowerCase()] : parseInt(tokens[1], 10);
                 day = parseInt(tokens[2], 10);
@@ -622,7 +860,7 @@
         const rawSearch = document.getElementById('empNoLookupInput').value.trim();
         const searchStrLower = rawSearch.toLowerCase();
         const typedNo = normalizeKey(rawSearch);
-        
+
         if (!rawSearch || globalEmployeeDatabase.length === 0) {
             document.getElementById('dbStatus').innerText = "";
             return;
@@ -649,8 +887,7 @@
 
         if (matchedProfile) {
             const empName = getDatabaseField(matchedProfile, ['Name', 'Employee Name', 'EmpName']) || "Unknown";
-            
-            // Auto-remove the default blank employee if it's currently unused to keep things clean
+
             const container = document.getElementById('employeesContainer');
             if (container.children.length === 1) {
                 const firstBlockInputs = container.querySelectorAll('.standard-input');
@@ -662,7 +899,7 @@
 
             addEmployeeBlock(matchedProfile);
             document.getElementById('empNoLookupInput').value = "";
-            
+
             document.getElementById('dbStatus').innerText = `✓ Added ${empName} to list.`;
             document.getElementById('dbStatus').style.color = 'green';
             setTimeout(() => { document.getElementById('dbStatus').innerText = ""; }, 3000);
@@ -676,8 +913,8 @@
         let columns = []; let insideQuotes = false; let entryBuffer = "";
         for (let i = 0; i < textLine.length; i++) {
             let char = textLine[i];
-            if (char === '"') insideQuotes = !insideQuotes; 
-            else if (char === ',' && !insideQuotes) { columns.push(entryBuffer.trim()); entryBuffer = ""; } 
+            if (char === '"') insideQuotes = !insideQuotes;
+            else if (char === ',' && !insideQuotes) { columns.push(entryBuffer.trim()); entryBuffer = ""; }
             else { entryBuffer += char; }
         }
         columns.push(entryBuffer.trim());
